@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import CreatePostForm from "@/components/Post/CreatePostForm.vue";
-import EditPostForm from "@/components/Post/EditPostForm.vue";
 import PostComponent from "@/components/Post/PostComponent.vue";
 import { useUserStore } from "@/stores/user";
 import { fetchy } from "@/utils/fetchy";
@@ -12,9 +11,9 @@ const { isLoggedIn } = storeToRefs(useUserStore());
 
 const loaded = ref(false);
 let posts = ref<Array<Record<string, string>>>([]);
-let editing = ref("");
+// let editing = ref("");
 let searchAuthor = ref("");
-
+// props are like the constructor values for calls to this object 
 async function getPosts(author?: string) {
   let query: Record<string, string> = author !== undefined ? { author } : {};
   let postResults;
@@ -23,13 +22,14 @@ async function getPosts(author?: string) {
   } catch (_) {
     return;
   }
+  console.log(postResults)
   searchAuthor.value = author ? author : "";
   posts.value = postResults;
 }
 
-function updateEditing(id: string) {
-  editing.value = id;
-}
+// function updateEditing(id: string) {
+//   editing.value = id;
+// }
 
 onBeforeMount(async () => {
   await getPosts();
@@ -49,8 +49,9 @@ onBeforeMount(async () => {
   </div>
   <section class="posts" v-if="loaded && posts.length !== 0">
     <article v-for="post in posts" :key="post._id">
-      <PostComponent v-if="editing !== post._id" :post="post" @refreshPosts="getPosts" @editPost="updateEditing" />
-      <EditPostForm v-else :post="post" @refreshPosts="getPosts" @editPost="updateEditing" />
+      <PostComponent :post="post" @refreshPosts="getPosts" />
+      <!-- <PostComponent v-if="editing !== post._id" :post="post" @refreshPosts="getPosts" @editPost="updateEditing" />
+      <EditPostForm v-else :post="post" @refreshPosts="getPosts" @editPost="updateEditing" /> -->
     </article>
   </section>
   <p v-else-if="loaded">No posts found</p>

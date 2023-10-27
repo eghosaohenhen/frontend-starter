@@ -22,23 +22,28 @@ onBeforeMount(async () => {
 </script>
 
 <template>
+  <!-- <link href="https://fonts.googleapis.com/css2?family=Fredoka&display=swap" rel="stylesheet"> -->
   <header>
-    <nav>
+    <nav v-if="isLoggedIn">
       <div class="title">
-        <img src="@/assets/images/logo.svg" />
+        
         <RouterLink :to="{ name: 'Home' }">
-          <h1>Social Media App</h1>
+          <img src="@/assets/images/picture.png" />
         </RouterLink>
       </div>
       <ul>
         <li>
-          <RouterLink :to="{ name: 'Home' }" :class="{ underline: currentRouteName == 'Home' }"> Home </RouterLink>
+          <RouterLink :to="{ name: 'Home' }" :class="{ underline: currentRouteName == 'Home' }" > Explore </RouterLink>
         </li>
         <li v-if="isLoggedIn">
           <RouterLink :to="{ name: 'Settings' }" :class="{ underline: currentRouteName == 'Settings' }"> Settings </RouterLink>
         </li>
+        
         <li v-else>
           <RouterLink :to="{ name: 'Login' }" :class="{ underline: currentRouteName == 'Login' }"> Login </RouterLink>
+        </li>
+        <li v-if="isLoggedIn">
+          <RouterLink :to="{ name: 'Media' }" :class="{ underline: currentRouteName == 'Media' }"> Media </RouterLink>
         </li>
       </ul>
     </nav>
@@ -51,17 +56,24 @@ onBeforeMount(async () => {
 
 <style scoped>
 @import "./assets/toast.css";
+@import "./assets/main.css";
 
 nav {
   padding: 1em 2em;
-  background-color: lightgray;
   display: flex;
   align-items: center;
 }
+li {
+  font-family: 'Starborn';
+  color: #2f01d1ff !important;
+}
 
 h1 {
-  font-size: 2em;
+  font-size: 1em;
   margin: 0;
+}
+body {
+  background-color: lightblue;
 }
 
 .title {
@@ -71,12 +83,12 @@ h1 {
 }
 
 img {
-  height: 2em;
+  height: 3em;
 }
 
 a {
   font-size: large;
-  color: black;
+  color: #2f01d1ff;
   text-decoration: none;
 }
 
@@ -90,6 +102,6 @@ ul {
 }
 
 .underline {
-  text-decoration: underline;
+  text-decoration-color: purple;
 }
 </style>

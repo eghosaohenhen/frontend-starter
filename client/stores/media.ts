@@ -1,4 +1,5 @@
-import { defineStore } from "pinia";
+import { useUserStore } from "@/stores/user";
+import { defineStore, storeToRefs } from "pinia";
 import { computed, ref } from "vue";
 
 import { fetchy } from "@/utils/fetchy";
@@ -8,7 +9,7 @@ export const useMediaStore = defineStore(
   () => {
     //add support for different media types
     const currentMediaUrl = ref("");
-
+    const { currentUsername } = storeToRefs(useUserStore());
     const isUploadedMedia = computed(() => currentMediaUrl.value !== "");
 
     const resetStore = () => {
@@ -17,7 +18,7 @@ export const useMediaStore = defineStore(
 
     const uploadMedia = async (mediaUrl: string) => {
       await fetchy("/api/media", "POST", {
-        body: { mediaUrl },
+        body: { username: currentUsername.value, content: mediaUrl },
       });
     };
 

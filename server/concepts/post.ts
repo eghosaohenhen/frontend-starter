@@ -7,25 +7,29 @@ import { BadValuesError, NotAllowedError, NotFoundError } from "./errors";
 //   backgroundColor?: string;
 // }
 export enum FlairType {
-  Tip = 'Tip',
-  Artwork = 'Artwork',
-  Inspo = 'Inspo',
-  General = 'General',
-};
-
+  Tip = "Tip",
+  Artwork = "Artwork",
+  Inspo = "Inspo",
+  General = "General",
+}
+export enum PostType {
+  Media = "Media",
+  Collage = "Collage",
+}
 
 export interface PostDoc extends BaseDoc {
   author: ObjectId;
   content: ObjectId;
-  flair: FlairType; 
-  caption?:string;
+  postType: PostType;
+  flair: FlairType;
+  caption?: string;
 }
-//TODO add captions 
+//TODO add captions
 export default class PostConcept {
   public readonly posts = new DocCollection<PostDoc>("posts");
 
-  async create(author: ObjectId, content: ObjectId, flair:FlairType, caption?:string) {
-    const _id = await this.posts.createOne({ author, content, flair, caption});
+  async create(author: ObjectId, content: ObjectId, postType: PostType, flair: FlairType, caption?: string) {
+    const _id = await this.posts.createOne({ author, content, postType, flair, caption });
     return { msg: "Post successfully created!", post: await this.posts.readOne({ _id }) };
   }
 
@@ -44,10 +48,13 @@ export default class PostConcept {
     return await this.getPosts({ author });
   }
   async getByFlair(flair: FlairType) {
-    return await this.getPosts({ flair});
+    return await this.getPosts({ flair });
+  }
+  async getByPostType(postType: PostType) {
+    return await this.getPosts({ postType });
   }
   async getById(_id: ObjectId) {
-    return await this.getPosts({ _id});
+    return await this.getPosts({ _id });
   }
 
   async update(_id: ObjectId, update: Partial<PostDoc>) {

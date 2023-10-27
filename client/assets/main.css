@@ -1,8 +1,21 @@
 /* Add some global styles here! */
+@import url('https://fonts.googleapis.com/css2?family=Fredoka&display=swap');
+html, body {
+  font-family: 'Fredoka', sans-serif;
+  background: linear-gradient(to right, #ffdefdff, #eff3feff);
+  height: 100vh;
+}
 
+#app {
+  font-family: 'Fredoka', sans-serif;
+}
 :root {
   --red: rgb(208, 67, 12);
-  --base-bg: #f1f3f5;
+  --base-bg:  #eff3feff;
+  --light-pink: #ffdefdff;
+  --medium-pink: #ed9ff6ff;
+  --medium-blue: #2f01d1ff;
+
 }
 
 button.btn-small {
@@ -30,3 +43,45 @@ a.button {
   align-items: center;
   gap: 1em;
 }
+/* custom fonts */
+
+
+
+@font-face { 
+  font-family: "Starborn";
+  src: local("Starborn"), url("./fonts/Starborn.ttf"), 
+  format("truetype");
+  
+}
+@font-face {
+  font-family: 'Aprils Regular';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Aprils Regular'), url('./fonts/Aprils Demo.woff') format('woff');
+  }
+@font-face {
+  font-family: 'Love Note Regular';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Love Note Regular'), url('./fonts/Love Note-Personal Use.woff') format('woff');
+  }
+@font-face{
+  font-family:'Fredoka',sans-serif;
+  src:url('https://fonts.googleapis.com/css2?family=Fredoka&display=swap');
+}
+h1{
+  font-family: 'Starborn';
+}
+h2,h3,h4,h5,h6{
+  font-family: 'Fredoka';
+}
+
+
+  .buttons {
+    background: linear-gradient(to right, #ff8a00, #da1b60);
+    color: white;
+  }
+  .v-btn.v-btn--secondary {
+    background: linear-gradient(to right, #da1b60, #ff8a00);
+    color: white;
+  }
