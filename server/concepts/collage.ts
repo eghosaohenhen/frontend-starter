@@ -24,18 +24,22 @@ export default class CollageConcept {
     return { msg: "Collage successfully created!", collage: await this.collages.readOne({ _id }) };
   }
   async getOne(query: Filter<CollageDoc>) {
-    const collage = await this.collages.readOne(query);
+    const collage = await this.collages.readMany({
+      sort: { dateUpdated: -1 },
+    });
+    console.log("this is the ", collage);
     return collage;
   }
+
   async getCollages(query: Filter<CollageDoc>) {
     const collages = await this.collages.readMany(query, {
       sort: { dateUpdated: -1 },
     });
     return collages;
   }
-  async getEditors(query: Filter<CollageDoc>) {
-    const collage = await this.collages.readOne(query);
-    return collage.editors;
+  async getCollageById(content_id: ObjectId) {
+    console.log(content_id, "collage id");
+    return await this.collages.readOne({ _id: content_id });
   }
 
   private async hasContent(_id: ObjectId, content: ObjectId) {

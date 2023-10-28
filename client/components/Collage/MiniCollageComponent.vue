@@ -18,22 +18,23 @@ const mediaUrl = ref("");
 async function switchPage() {
   void router.push({ name: "Collage" });
 }
-async function getEditors(collage_id: string) {
-  let query: Record<string, string> = collage_id !== undefined ? { collage_id } : {};
+async function getEditors() {
+  let lquery: Record<string, string> = props.collage._id !== undefined ? { _id:props.collage._id } : {};
+  console.log(lquery, props.collage._id, "HEERE");
   let editorResults;
   try {
-    editorResults = await fetchy(`/api/collages/${props.collage._id}/editors`, "GET", { query });
+    editorResults = await fetchy(`/api/collages/editors/${props.collage._id}`, "GET", { query: {_id:props.collage._id}, });
   } catch (_) {
     return;
   }
   console.log(editorResults);
   editors.value = editorResults;
 }
-async function getContent(collage_id: string) {
-  let query: Record<string, string> = collage_id !== undefined ? { collage_id } : {};
+async function getContent() {
+    let lquery: Record<string, string> =props.collage._id !== undefined ? { _id:props.collage._id } : {};
   let contentResults;
   try {
-    contentResults = await fetchy(`/api/collages/${props.collage._id}/content`, "GET", { query });
+    contentResults = await fetchy(`/api/collages/content/${props.collage._id}`, "GET", { query: {_id:props.collage._id}, });
   } catch (_) {
     return;
   }
@@ -53,7 +54,7 @@ const deleteCollage = async () => {
 };
 
 onBeforeMount(async () => {
-  await getEditors(props.collage._id);
+  await getEditors();
   loaded.value = true;
 });
 </script>
@@ -65,7 +66,7 @@ onBeforeMount(async () => {
   <!-- <p>{{ props.post }}</p> -->
   <!-- content stuff  -->
   <!-- <p>{{ props.post.content }}</p> -->
-  
+  <article>
   <div class="container">
     
     <section class="contents">
@@ -107,11 +108,20 @@ onBeforeMount(async () => {
       <img class= "icon" @click="toggleOptions" src="@/assets/images/menu.svg">
     </div> -->
   </div>
+</article>
   
   
 </template>
 
 <style scoped>
+article {
+  background-color: #ffffff;
+  border-radius: 1em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  padding: 1em;
+}
 p {
   margin: 0em;
 }
@@ -131,7 +141,8 @@ p {
 }
 
 #grey{
-    background-color: dimgray;
+    background: dimgray;
+    width:75px;
 }
 img {
   width: 100%;

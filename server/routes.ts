@@ -239,9 +239,19 @@ class Routes {
     }
     //return Responses.posts(posts);
   }
-  @Router.get("/collages/:_id/editors")
+  @Router.get("/collages/editors/:_id")
   async getEditors(_id: ObjectId) {
-    return await User.idsToUsernames(await Collage.getEditors({ id: _id }));
+    console.log("here in get", _id);
+    const collage = await Collage.getCollageById(_id);
+    console.log(collage, "collage");
+    const editors = collage.editors;
+    return await User.idsToUsernames(editors);
+  }
+  @Router.get("/collages/content/:_id")
+  async getContent(_id: ObjectId) {
+    const collage = await Collage.getCollageById(_id);
+    const content = collage.content);
+    return await User.idsToUsernames(content);
   }
 
   @Router.delete("/collages")
