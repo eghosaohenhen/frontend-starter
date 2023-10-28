@@ -8,10 +8,9 @@ const caption = ref("");
 const selectable = ref<boolean>(true);
 const emit = defineEmits(["refreshPosts"]);
 const flair = ref("");
-const props = defineProps(["location", "post_type"]);
+
 const mediaVisible = ref(false);
-const text = ref("");
-const icon = ref("");
+
 const toggle_flair = ref(null);
 const toggle_content = ref(null);
 const content_type = ref(""); 
@@ -39,13 +38,14 @@ const createPost = async () => {
   emit("refreshPosts");
   emptyForm();
 };
-function warn(message:string, event:MouseEvent) {
-  // now we have access to the native event
-  if (event) {
-    event.preventDefault();
-  }
-  alert(message);
-}
+// function warn(message:string, event:MouseEvent) {
+//   // now we have access to the native event
+//   if (event) {
+//     event.preventDefault();
+//   }
+//   alert(message);
+// }
+
 const emptyForm = () => {
   content_id.value = "";
   content_type.value = "";
@@ -58,7 +58,7 @@ const emptyForm = () => {
 <template>
   <div class="container">
   <form class="span1" @submit.prevent="createPost()" >
-    
+    <div class="inside">
     <label for="content" class="default">Choose Post Flair</label> 
     
     <div class="d-flex flex-column " id="Flair">
@@ -75,10 +75,10 @@ const emptyForm = () => {
           class="buttons"
           id="Flair"
         >
-          <v-btn @click="selectPostFlair('General')"><h6>General</h6></v-btn>
-          <v-btn @click="selectPostFlair('Artwork')"><h6>Artwork</h6></v-btn>
-          <v-btn @click="selectPostFlair('Inspo')"><h6>Inspo</h6></v-btn>
-          <v-btn @click="selectPostFlair('Tip')"><h6>Tip</h6></v-btn>
+          <v-btn id="btn" @click="selectPostFlair('General')">General</v-btn>
+          <v-btn id="btn" @click="selectPostFlair('Artwork')">Artwork</v-btn>
+          <v-btn id="btn" @click="selectPostFlair('Inspo')">Inspo</v-btn>
+          <v-btn id="btn" @click="selectPostFlair('Tip')">Tip</v-btn>
           <!-- {{ flair }} -->
         </v-btn-toggle>
       </v-col>
@@ -97,11 +97,11 @@ const emptyForm = () => {
           mandatory
           class="buttons"
         >
-          <v-btn @click="toggleChildVisibility">Choose Image<v-icon>mdi-format-align-left</v-icon>
+          <v-btn id="btn" @click="toggleChildVisibility">Choose Image<v-icon>mdi-format-align-left</v-icon>
             
           </v-btn>
 
-          <v-btn>Choose Collage
+          <v-btn id="btn">Choose Collage
             <v-icon>mdi-format-align-center</v-icon>
           </v-btn>
         </v-btn-toggle>
@@ -122,13 +122,14 @@ const emptyForm = () => {
     <!-- <textarea id="content" v-model="content_id" placeholder="Create a post!" required> </textarea> -->
     <textarea id="caption" v-model="caption" placeholder="[Optional] Add a Caption!!"> </textarea>
 
-    <button type="submit" :disabled="isSubmitDisabled" class="pure-button-primary pure-button">Create Post</button>
+    <button type="submit" :disabled="isSubmitDisabled" id= "btn" class="pure-button">Create Post</button>
+  </div>
   </form>
 </div>
 </template>
 
 <style scoped>
-.pure-button-primary pure-button {
+.pure-button {
   width: fit-content;
   align-self:center;
 }
@@ -137,8 +138,23 @@ const emptyForm = () => {
   flex-direction: row;
   justify-content: center;
   
+  
 }
+#caption{
+  border-radius: 1em;
+  border-color: var(--muted-blue);
 
+}
+#btn{
+  font-family: 'Fredoka', sans-serif;
+  color:var(--near-black);
+  background: var(--light-pink);
+}
+.default{
+  display:flex; 
+  flex-direction: row;
+  justify-content:center;
+}
 .container {
   max-width:770px;
   width:100%;
@@ -148,14 +164,21 @@ const emptyForm = () => {
   
 }
 form {
-  background-color: var(--base-bg);
+  background-color: var(--muted-lavender);
   border-radius: 1em;
   display: flex;
   flex-direction: column;
   gap: 0.5em;
   padding: 1em;
 }
-
+.inside {
+  background: #ffffff;
+  border-radius: 1em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  padding: 1em;
+}
 .flex-column{
   padding: 0.5em;
   align-items: center;

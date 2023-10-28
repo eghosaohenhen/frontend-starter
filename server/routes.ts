@@ -239,6 +239,10 @@ class Routes {
     }
     //return Responses.posts(posts);
   }
+  @Router.get("/collages/:_id/editors")
+  async getEditors(_id: ObjectId) {
+    return await User.idsToUsernames(await Collage.getEditors({ id: _id }));
+  }
 
   @Router.delete("/collages")
   async deleteCollage(session: WebSessionDoc, _id: ObjectId) {

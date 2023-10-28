@@ -1,25 +1,37 @@
 /* Add some global styles here! */
 @import url('https://fonts.googleapis.com/css2?family=Fredoka&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap');
 html, body {
   font-family: 'Fredoka', sans-serif;
-  background: linear-gradient(to right, #ffdefdff, #eff3feff);
+  background: var(--base-bg);
+  /* background: linear-gradient(to right, #ffdefdff, #eff3feff, #ffdefdff); */
   height: 100vh;
+
 }
 
 #app {
   font-family: 'Fredoka', sans-serif;
 }
 :root {
-  --red: rgb(208, 67, 12);
+  --red: #f59ba5ff;
   --base-bg:  #eff3feff;
   --light-pink: #ffdefdff;
   --medium-pink: #ed9ff6ff;
   --medium-blue: #2f01d1ff;
+  --dark-blue: #091d68ff;
+  --light-yellow: #fef0bcff;
+  --near-black: #02052cff;
+  --muted-blue:#5a69d0ff;
+  --muted-lavender:#6264a1ff;
+  --magenta:#863263ff;
+  --dark-plum:#3b1f48ff;
+  --medium: 75px;
+  --large: 150px;
 
 }
 
 button.btn-small {
-  font-size: 80%;
+  font-size: 100%;
 }
 
 button.button-error {
@@ -29,7 +41,7 @@ button.button-error {
 
 a.button {
   color: #212529;
-  background-color: #f1f3f5;
+  background-color: linear-gradient(to right, var(--magenta), var(--medium-pink), var(--magenta));
   border: 1px solid #dee2e6;
   border-radius: 0.25em;
   padding: 0.375em 0.75em;

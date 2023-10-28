@@ -2,6 +2,9 @@ import { storeToRefs } from "pinia";
 import { createRouter, createWebHistory } from "vue-router";
 
 import { useUserStore } from "@/stores/user";
+import AddView from "../views/AddView.vue";
+import CollageView from "../views/CollageView.vue";
+import AddCollageView from "../views/AddCollageView.vue";
 import WelcomeView from "../views/WelcomeView.vue";
 import HomeView from "../views/HomeView.vue";
 import MediaView from "../views/MediaView.vue";
@@ -19,9 +22,27 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      path: "/addCollage",
+      name: "AddCollage",
+      component: AddCollageView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: "/addPosr",
+      name: "AddPost",
+      component: AddView,
+      meta: { requiresAuth: true },
+    },
+    {
       path: "/setting",
       name: "Settings",
       component: SettingView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: "/collage",
+      name: "Collage",
+      component: CollageView,
       meta: { requiresAuth: true },
     },
     {

@@ -33,7 +33,16 @@ onBeforeMount(async () => {
       </div>
       <ul>
         <li>
+          <RouterLink :to="{ name: 'AddPost' }" :class="{ underline: currentRouteName == 'AddPost' }" > + </RouterLink>
+        </li>
+        <li>
           <RouterLink :to="{ name: 'Home' }" :class="{ underline: currentRouteName == 'Home' }" > Explore </RouterLink>
+        </li>
+        <li v-if="isLoggedIn">
+          <RouterLink :to="{ name: 'Media' }" :class="{ underline: currentRouteName == 'Media' }"> Media </RouterLink>
+        </li>
+        <li v-if="isLoggedIn">
+          <RouterLink :to="{ name: 'Collage' }" :class="{ underline: currentRouteName == 'Collage' }"> Collages </RouterLink>
         </li>
         <li v-if="isLoggedIn">
           <RouterLink :to="{ name: 'Settings' }" :class="{ underline: currentRouteName == 'Settings' }"> Settings </RouterLink>
@@ -42,9 +51,7 @@ onBeforeMount(async () => {
         <li v-else>
           <RouterLink :to="{ name: 'Login' }" :class="{ underline: currentRouteName == 'Login' }"> Login </RouterLink>
         </li>
-        <li v-if="isLoggedIn">
-          <RouterLink :to="{ name: 'Media' }" :class="{ underline: currentRouteName == 'Media' }"> Media </RouterLink>
-        </li>
+        
       </ul>
     </nav>
     <article v-if="toast !== null" class="toast" :class="toast.style">

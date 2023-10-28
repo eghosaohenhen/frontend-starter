@@ -3,7 +3,6 @@ import { useMediaStore } from "@/stores/media";
 import { ref } from "vue";
 
 let mediaUrl = ref("");
-const file = ref<null | File>(null);
 const emit = defineEmits(["refreshMedias"]);
 const {uploadMedia, deleteMedia} = useMediaStore();
 
@@ -33,12 +32,24 @@ async function uploadMediaUrl() {
   </script> -->
 
 <template>
-  <h2>Upload Media</h2>
   <form @submit.prevent="uploadMediaUrl" class="pure-form">
     <fieldset>
       <legend>Upload an image URL </legend>
       <input type="text" placeholder="Image Url" v-model="mediaUrl" required />
-      <button type="submit" class="pure-button pure-button-primary">Upload Image Url</button>
+      <button type="submit" id= "btn" class="pure-button">Upload Image Url</button>
     </fieldset>
   </form>
 </template>
+<style>
+.pure-button {
+    width: fit-content;
+    align-self:center;
+  }
+#btn{
+    font-family: 'Fredoka', sans-serif;
+    color:var(--near-black);
+    background: var(--light-pink);
+    padding:.75em; 
+    border-radius: .75em;
+  }
+</style>

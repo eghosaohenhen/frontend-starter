@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import PostListComponent from "@/components/Post/PostListComponent.vue";
+import CreatePostForm from "@/components/Post/CreatePostForm.vue";
 import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
 
@@ -10,22 +10,15 @@ const { currentUsername, isLoggedIn } = storeToRefs(useUserStore());
 <template>
   <main class="column" id="container">
     
-      <h2>Explore Page</h2>
-      <section>
-        <!-- <h1 v-if="isLoggedIn">Welcome {{ currentUsername }}!</h1>
-        <h1 v-else>Please login!</h1> -->
-      </section>
-      <PostListComponent />
+      <h3>Add a Post</h3>
+      
+      <CreatePostForm/>
   </main>
 </template>
 
 <style scoped>
-h1 {
+h3 {
   text-align: center;
-}
-h2 {
-  height:16px;
-  text-align: right;
 }
 /* #container {
   display: flex;
