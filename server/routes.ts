@@ -250,7 +250,7 @@ class Routes {
   @Router.get("/collages/content/:_id")
   async getContent(_id: ObjectId) {
     const collage = await Collage.getCollageById(_id);
-    const content = collage.content);
+    const content = collage.content;
     return await User.idsToUsernames(content);
   }
 
