@@ -5,7 +5,7 @@ import { Router, getExpressRouter } from "./framework/router";
 import { Collage, CollageFavorite, Comment, Media, Post, PostFavorite, Space, SpaceFavorite, User, UserFavorite, WebSession } from "./app";
 import { CommentDoc } from "./concepts/comment";
 import { NotAllowedError, NotFoundError } from "./concepts/errors";
-import { FlairType, PostType, InvalidPostFlairError } from "./concepts/post";
+import { FlairType, InvalidPostFlairError, PostType } from "./concepts/post";
 import { SpaceDoc } from "./concepts/space";
 import { UserDoc } from "./concepts/user";
 import { WebSessionDoc } from "./concepts/websession";
@@ -243,15 +243,24 @@ class Routes {
   async getEditors(_id: ObjectId) {
     console.log("here in get", _id);
     const collage = await Collage.getCollageById(_id);
-    console.log(collage, "collage");
-    const editors = collage.editors;
-    return await User.idsToUsernames(editors);
+    if (collage) {
+      console.log(collage, "collage");
+      const editors = collage.editors;
+      return await User.idsToUsernames(editors);
+    } else {
+      throw new NotFoundError(`cannot find collage with id ${_id}`);
+    }
   }
   @Router.get("/collages/content/:_id")
   async getContent(_id: ObjectId) {
     const collage = await Collage.getCollageById(_id);
-    const content = collage.content;
-    return await User.idsToUsernames(content);
+    if (collage) {
+      console.log(collage, "collage");
+      const editors = collage.content;
+      return await User.idsToUsernames(editors);
+    } else {
+      throw new NotFoundError(`cannot find collage with id ${_id}`);
+    }
   }
 
   @Router.delete("/collages")
