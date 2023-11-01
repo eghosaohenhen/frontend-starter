@@ -32,14 +32,15 @@ export default class CollageConcept {
   }
 
   async getCollages(query: Filter<CollageDoc>) {
+    console.log("this is the collage query ", query);
     const collages = await this.collages.readMany(query, {
       sort: { dateUpdated: -1 },
     });
     return collages;
   }
-  async getCollageById(content_id: ObjectId) {
-    console.log(content_id, "collage id");
-    return await this.collages.readOne({ _id: content_id });
+  async getCollageById(_id: ObjectId) {
+    console.log(_id, "collage id");
+    return await this.collages.readOne({ _id: _id });
   }
 
   private async hasContent(_id: ObjectId, content: ObjectId) {
@@ -134,6 +135,12 @@ export default class CollageConcept {
 
   async getByAuthor(author: ObjectId) {
     return await this.getCollages({ author });
+  }
+  async getByEditor(author: ObjectId, editor: ObjectId) {
+    return await this.getCollages({ editors: editor, author: { $ne: author } });
+  }
+  async getByContributor(editor: ObjectId) {
+    return await this.getCollages({ editors: editor });
   }
 
   async update(_id: ObjectId, update: Partial<CollageDoc>) {

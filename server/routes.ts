@@ -194,10 +194,11 @@ class Routes {
     return { msg: upload.msg, post: upload.media };
   }
   @Router.get("/media")
-  async getMedia(username?: string) {
-    if (username) {
-      const user = await User.getUserByUsername(username);
-      return await Media.getMedia({ author: user });
+  async getMedia(author?: string) {
+    console.log(author, "hereeee");
+    if (author) {
+      const id: ObjectId = (await User.getUserByUsername(author))._id;
+      return await Media.getByAuthor(id);
     } else {
       return await Media.getMedia({});
     }
@@ -223,21 +224,26 @@ class Routes {
   }
 
   @Router.get("/collages")
-  async getCollage(_id?: ObjectId, editorname?: string, authorname?: string) {
-    if (_id) {
-      return await Collage.getCollages({ id: _id });
-    } else if (editorname) {
-      //$in?
-      //$or: [{ from: user }, { to: user }],
-      const id = (await User.getUserByUsername(editorname))._id;
-      return await Collage.getCollages({ editors: id });
-    } else if (authorname) {
-      const id = (await User.getUserByUsername(authorname))._id;
-      return await Collage.getCollages({ author: id });
+  async getCollage(exclusive?: string, author?: string, editor?: string) {
+    console.log(editor, " is editorname", author, " is username");
+    if (author) {
+      const id = (await User.getUserByUsername(author))._id;
+      return await Collage.getByAuthor(id);
+    } else if (editor && !exclusive) {
+      const id = (await User.getUserByUsername(editor))._id;
+
+      return await Collage.getByEditor(id, id);
+    } else if (editor && exclusive) {
+      const id = (await User.getUserByUsername(editor))._id;
+      return await Collage.getByContributor(id);
     } else {
       return await Collage.getCollages({});
     }
     //return Responses.posts(posts);
+  }
+  @Router.get("/collage/:_id")
+  async getCollageById(_id: ObjectId) {
+    return await Collage.getCollageById(_id);
   }
   @Router.get("/collages/editors/:_id")
   async getEditors(_id: ObjectId) {

@@ -1,5 +1,6 @@
 import { User } from "./app";
 import { AlreadyFriendsError, FriendNotFoundError, FriendRequestAlreadyExistsError, FriendRequestDoc, FriendRequestNotFoundError } from "./concepts/friend";
+import { MediaDoc } from "./concepts/media";
 import { PostAuthorNotMatchError, PostDoc } from "./concepts/post";
 import { Router } from "./framework/router";
 
@@ -17,6 +18,17 @@ export default class Responses {
     }
     const author = await User.getUserById(post.author);
     return { ...post, author: author.username };
+  }
+  static async media(media: MediaDoc | null) {
+    if (!media) {
+      return media;
+    }
+    const author = await User.getUserById(media.author);
+    return { ...media, author: author.username };
+  }
+  static async medias(medias: MediaDoc[]) {
+    const authors = await User.idsToUsernames(medias.map((media) => media.author));
+    return medias.map((media, i) => ({ ...media, author: authors[i] }));
   }
 
   /**

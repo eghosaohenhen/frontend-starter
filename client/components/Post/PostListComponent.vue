@@ -7,15 +7,22 @@ import { onBeforeMount, ref } from "vue";
 import SearchPostForm from "./SearchPostForm.vue";
 
 const { isLoggedIn } = storeToRefs(useUserStore());
-const props = defineProps(["selectable"]);
+const { currentUsername } = storeToRefs(useUserStore());
+const props = defineProps(["selectable", "own"]);
 const loaded = ref(false);
-const minimized = ref(true);
 let posts = ref<Array<Record<string, string>>>([]);
 // let editing = ref("");
-let searchAuthor = ref("");
 // props are like the constructor values for calls to this object 
-async function getPosts(author?: string) {
-  let query: Record<string, string> = author !== undefined ? { author } : {};
+async function getPosts(filterType?: string, filter?:string) {
+  //author is actually 
+  let query: Record<string, string>;
+  if(filterType === "author"){
+    query = (filter)? {author:filter}:{}; 
+  }else{
+    query = (filter)? {flair:filter}:{};
+  }
+  
+  console.log(query);
   let postResults;
   try {
     postResults = await fetchy("/api/posts", "GET", { query });
@@ -23,29 +30,46 @@ async function getPosts(author?: string) {
     return;
   }
   console.log(postResults)
-  searchAuthor.value = author ? author : "";
   posts.value = postResults;
 }
+async function addContent(post_id:string, collage_id:string) {
+  console.log("in add content this is post", post_id, collage_id)
+    // let lquery: Record<string, string> =props.collage._id !== undefined ? { _id:props.collage._id } : {};
+  let contentResults;
+  try {
+    let newFavorite = await fetchy(`api/favorites/${post_id}/collages/${collage_id}`, 
+    "POST", 
+    { body: {item_id:post_id, collage_id: collage_id}, });
+    console.log(newFavorite.value, "newFavorite");
 
+  } catch (_) {
+    return;
+  }
+  // console.log(contentResults, "contentresults");
+  // newFavorite.value = contentResults;
+ 
+}
 // function updateEditing(id: string) {
 //   editing.value = id;
 // }
 
 onBeforeMount(async () => {
-  await getPosts();
+  if (props.own) {
+    await getPosts("author", currentUsername.value);
+  } else {
+    await getPosts();
+  }
   loaded.value = true;
 });
 </script>
-
+<!-- v-if="!props.own" -->
 <template>
   <div class="row">
-    <!-- <h2 v-if="!searchAuthor">Posts:</h2>
-    <h2 v-else>Posts by {{ searchAuthor }}:</h2> -->
-    <SearchPostForm class= "side" @getPostsByAuthor="getPosts" />
+    <SearchPostForm @getPostsByFilter="getPosts" />
   </div>
   <section class="posts" v-if="loaded && posts.length !== 0">
-    <article v-for="post in posts" :key="post._id">
-        <PostComponent :post="post" @refreshPosts="getPosts" />
+    <article v-for="(post,index) in posts" :key="post._id">
+        <PostComponent :post="post" @refreshPosts="getPosts" :index="index" @saved:post_id="addContent"/>
       <!-- <PostComponent v-if="editing !== post._id" :post="post" @refreshPosts="getPosts" @editPost="updateEditing" />
       <EditPostForm v-else :post="post" @refreshPosts="getPosts" @editPost="updateEditing" /> -->
     </article>

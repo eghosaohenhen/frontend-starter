@@ -6,12 +6,12 @@ import { onBeforeMount, ref } from "vue";
 import { fetchy } from "../../utils/fetchy";
 
 // https://vuetifyjs.com/en/components/images/#caveats
-const props = defineProps(["selectable"]);
+const props = defineProps(["selectable", "own"]);
 let medias = ref<Array<Record<string, string>>>([]);
 let selectTarget = ref<string>("");
 let selectedOne = ref<boolean>(false);
 const { currentUsername,isLoggedIn } = storeToRefs(useUserStore());
-const emit = defineEmits(["refreshMedias", "selectedMedia", "selected:content_id", "selected:content_type"]);
+const emit = defineEmits(["selectedMedia", "selected:content_id", "selected:content_type"]);
 // are emits async EGGO Q
 async function toggleOverlay (index:number) {
     selectTarget.value = medias.value[index]._id;
@@ -22,8 +22,9 @@ async function toggleOverlay (index:number) {
 
 
 async function getMedias(username?: string) {
+
   let query: Record<string, string> = username !== undefined ? { author:username } : {};
-    console.log(query);
+    console.log(query, 'my query');
   let postResults;
   try {
     postResults = await fetchy("/api/media", "GET", { query });
@@ -33,7 +34,7 @@ async function getMedias(username?: string) {
   }
   medias.value = postResults;
 //   overlayVisible.value = Array(postResults.length).fill(false);
-  emit("refreshMedias");
+  // emit("refreshMedias");
 }
 
 onBeforeMount(async () => {
@@ -43,7 +44,7 @@ onBeforeMount(async () => {
 <template>
     <!-- {{ medias }} -->
     <section v-if="isLoggedIn">
-        <UploadMedia @refreshMedias="getMedias" />
+        <UploadMedia @refreshMedias="getMedias(currentUsername)" />
         <v-row>
             <v-col
             v-for="(media,index) in medias"

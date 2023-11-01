@@ -2,14 +2,13 @@
 import { useUserStore } from "@/stores/user";
 import { formatDate } from "@/utils/formatDate";
 import { storeToRefs } from "pinia";
-import { onBeforeMount, ref } from "vue";
-import router from "../../router";
+import { computed, onBeforeMount, ref } from "vue";
 import { fetchy } from "../../utils/fetchy";
 import CollageListComponent from "../Collage/CollageListComponent.vue";
 
-const props = defineProps(["post","minimized","small"]);
+const props = defineProps(["post","minimized","small", "index"]);
 const drawer = ref(false);
-const emit = defineEmits(["refreshPosts", "saved:post_id", "refreshCollages"]);
+const emit = defineEmits(["refreshPosts", "saved:post_id", "refreshCollageList"]);
 const loaded = ref(false);
 const { currentUsername } = storeToRefs(useUserStore());
 const mediaUrl = ref("");
@@ -38,7 +37,10 @@ const mediaIdtoUrl = async () => {
   // console.log('media object', mediaObject); 
   mediaUrl.value = mediaObject.content;
 };
-
+const isSubmitDisabled = computed(() => {
+      // You can set your own validation logic here.
+      return !collage_id.value;
+});
 const deletePost = async () => {
   try {
     await fetchy(`/api/posts/${props.post._id}`, "DELETE");
@@ -47,14 +49,12 @@ const deletePost = async () => {
   }
   emit("refreshPosts");
 };
+const selectCollage = async (collageObject:any) =>{
+  collage_id.value = collageObject._id;
+}
 const createFavorite = async () => {
-  emit("saved:post_id", props.post._id);
-  void router.push({ name: "AddCollage" });
-  try {
-    await fetchy(`"/api/favorites/${props.post._id}/collages/:collage_id`, "POST");
-  } catch {
-    return;
-  }
+  emit("saved:post_id", props.post._id,collage_id.value);
+  // void router.push({ name: "AddCollage" });
   emit("refreshPosts");
 };
 onBeforeMount(async () => {
@@ -64,7 +64,7 @@ onBeforeMount(async () => {
 </script>
 
 <template>
-  <div class="header" v-show="!minimized">
+  <div class="header" v-show="!props.minimized">
     
     <p class="author">{{ props.post.author }}</p>
     <div class="sidebar">
@@ -81,7 +81,7 @@ onBeforeMount(async () => {
   <!-- <p>{{ props.post }}</p> -->
   <!-- content stuff  -->
   <!-- <p>{{ props.post.content }}</p> -->
-  <div class="container" v-if = "props.post.postType.toString() === 'Media'.toString()">
+  <div class="container" v-if = "props.post.postType === 'Media'">
   
     <v-img
         :src= "`${mediaUrl}`"
@@ -93,10 +93,8 @@ onBeforeMount(async () => {
         
     >
     <template v-slot:placeholder>
-        <div class="d-flex align-center justify-center fill-height">
-          <v-progress-circular
-            color="grey-lighten-4"
-          ></v-progress-circular>
+        <div id = "grey" class="d-flex align-center justify-center fill-height">
+          Not Found
         </div>
       </template>
         <v-row
@@ -121,7 +119,7 @@ onBeforeMount(async () => {
   
   </div>
   
-  <div class="base" v-show="!minimized">
+  <div class="base" v-show="!props.minimized">
     <div class="text">
       <p class="user">{{ props.post.author }}</p> {{ props.post.caption }}
       <div class="sidebar">
@@ -129,11 +127,15 @@ onBeforeMount(async () => {
       </div>
     </div>
     <v-scroll-y-transition>
-      <div class="container">
-        <h4 v-if="collageVisible">Save Post to Collage</h4>
-        <CollageListComponent @selected:content_id="collage_id = $event" :selectable="selectable" v-if="collageVisible" required/>
-        <!-- <p>Parent Value: {{ content_id }}</p> -->
+      <form class="span1" @submit.prevent="createFavorite()" v-show="collageVisible">
+        <div class="container">
+        <h4 v-if="collageVisible">Choose Collage</h4>
+        <CollageListComponent  :contributor= "true" :selectable="selectable" v-if="collageVisible" required/>
+        <button class="button-error fav_button" type="submit" :disabled="isSubmitDisabled" >Save Post</button>
       </div>
+    
+      </form>
+      
     </v-scroll-y-transition>
     
     <v-list-subheader>View Comments ></v-list-subheader>
@@ -153,6 +155,14 @@ p {
 img {
   width: 100%;
 }
+form {
+  background-color: var(--muted-lavender);
+  border-radius: 1em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  padding: .5em;
+}
 label{
   border-radius: 10px;
   border-style: solid;
@@ -164,10 +174,14 @@ label{
   
 }
 .large{
-  width:var(--large);
+  width:100px;
+    height:200px;
+    padding: 10px;
+  width:200px;
 }
 .small{
-  width:var(--medium);
+  width:85px;
+    height:95px;
 }
 .fav_button{
   padding: .1em;

@@ -6,17 +6,21 @@ import { useUserStore } from "../../stores/user";
 import { fetchy } from "../../utils/fetchy";
 import PostComponent from "../Post/PostComponent.vue";
 
-const props = defineProps(["collage"]);
-const minimized = ref<boolean>(true);
+const props = defineProps(["collage", "maximize"]);
 let editors = ref<Array<Record<string, string>>>([]);
 let content = ref<Array<Record<string, string>>>([]);
 const drawer = ref(false);
-const emit = defineEmits(["refreshCollages", "refreshContent","refreshEditors"]);
+const emit = defineEmits(["refreshCollages", "refreshContent","refreshEditors", "addContent"]);
 const loaded = ref(false);
 const { currentUsername } = storeToRefs(useUserStore());
 const mediaUrl = ref("");
+const minimized = ref(true); 
+// const collageMaximized = ref(false);
+// const toggleChildVisibility = () => {
+//   collageMaximized.value = !collageMaximized.value;
+//     };
 async function switchPage() {
-  void router.push({ name: "Collage" });
+  void router.push({ name: "CollageComponent" });
 }
 async function getEditors() {
   let lquery: Record<string, string> = props.collage._id !== undefined ? { _id:props.collage._id } : {};
@@ -29,6 +33,7 @@ async function getEditors() {
   }
   console.log(editorResults);
   editors.value = editorResults;
+  
 }
 async function getContent() {
     let lquery: Record<string, string> =props.collage._id !== undefined ? { _id:props.collage._id } : {};
@@ -38,8 +43,9 @@ async function getContent() {
   } catch (_) {
     return;
   }
-  console.log(contentResults);
+  console.log(contentResults, "contentresults");
   content.value = contentResults;
+ 
 }
 // write a function that that will return url version of media given the media id by calling getMedia() to backend
 //content is here because my backend 
@@ -53,13 +59,15 @@ const deleteCollage = async () => {
   emit("refreshCollages");
 };
 
+
 onBeforeMount(async () => {
   await getEditors();
+  await getContent();
   loaded.value = true;
 });
 </script>
 
-<template @onClick="">
+<template>
   
   
   <!-- to see whats in the object, ref = .value  -->
@@ -67,7 +75,7 @@ onBeforeMount(async () => {
   <!-- content stuff  -->
   <!-- <p>{{ props.post.content }}</p> -->
   <article>
-  <div class="container">
+  <div class="container" @onClick="switchPage">
     
     <section class="contents">
     <div class="left">
@@ -89,15 +97,17 @@ onBeforeMount(async () => {
     </section>
   </div>
     <div class="footer">
-    {{ props.collage.name }}
-    <p class="author">
-        <h3>Editors</h3>
-        <article v-for="(editor,index) in editors" :key="collage._id">
-            <section @refreshEditors="getEditors">
-                <v-list-subheader v-if="index < 3">{{ editor }} </v-list-subheader>
+      <h3>{{ props.collage.name }} </h3>
+    
+        Editors
+        <div class ="row">
+        <div v-for="(editor,index) in editors" :key="collage._id">
+            
+                <v-list-subheader id='chip' v-if="index < 3">{{ editor }}</v-list-subheader>
                 <v-list-subheader v-else>... </v-list-subheader>
-            </section>
-        </article></p>
+            
+          </div>
+        </div>
     <!-- <div class="sidebar">
 
     
@@ -125,28 +135,50 @@ article {
 p {
   margin: 0em;
 }
+#chip{
+  display: inline-block;
+  padding: 0 15px;
+  height: 30px;
+  font-size: 16px;
+  line-height: 40px;
+  border-radius: 15px;
+  background-color: var(--base-bg);
+}
+.row{
+  display:flex;
+  flex-flow: row wrap;
+}
 .large{
-    width:150px;
+    width:100px;
+    height:200px;
+    padding: 10px;
+    
 }
 .small{
-    width:75px;
+    width:85px;
+    height:95px;
+    
 }
 .right{
+    width:100px;
     display:flex;
-    flex-direction: column;
+    flex-flow: column nowrap;
+    justify-content:space-between;
+    align-items: center;
+    
 }
 .contents{
     display:flex;
-    flex-direction: row;
+    flex-flow: row nowrap;
+    align-content: space-between;
+    width: 200px;
+    height:200px;
 }
 
 #grey{
     background: dimgray;
-    width:75px;
 }
-img {
-  width: 100%;
-}
+
 label{
   border-radius: 10px;
   border-style: solid;

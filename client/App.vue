@@ -26,10 +26,10 @@ onBeforeMount(async () => {
   <header>
     <nav v-if="isLoggedIn">
       <div class="title">
-        
+        <img src="@/assets/images/picture.png" />
         <RouterLink :to="{ name: 'Home' }">
-          <img src="@/assets/images/picture.png" />
         </RouterLink>
+        
       </div>
       <ul>
         <li>
@@ -47,7 +47,12 @@ onBeforeMount(async () => {
         <li v-if="isLoggedIn">
           <RouterLink :to="{ name: 'Settings' }" :class="{ underline: currentRouteName == 'Settings' }"> Settings </RouterLink>
         </li>
-        
+        <li v-if="isLoggedIn">
+          <RouterLink :to="{ name: 'Profile' }" :class="{ underline: currentRouteName == 'Profile' }">
+            <i class="gg-profile"></i>
+          </RouterLink>
+          
+        </li>
         <li v-else>
           <RouterLink :to="{ name: 'Login' }" :class="{ underline: currentRouteName == 'Login' }"> Login </RouterLink>
         </li>
@@ -79,9 +84,6 @@ h1 {
   font-size: 1em;
   margin: 0;
 }
-body {
-  background-color: lightblue;
-}
 
 .title {
   display: flex;
@@ -109,6 +111,6 @@ ul {
 }
 
 .underline {
-  text-decoration-color: purple;
+  text-decoration: underline;
 }
 </style>

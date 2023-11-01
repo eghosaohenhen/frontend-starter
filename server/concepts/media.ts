@@ -19,6 +19,10 @@ export default class MediaConcept {
   async getMediaById(content_id: ObjectId) {
     return await this.medias.readOne({ _id: content_id });
   }
+  async getByAuthor(author: ObjectId) {
+    return await this.getMedia({ author });
+  }
+
   async getMedia(query: Filter<MediaDoc>) {
     const medias = await this.medias.readMany(query, {
       sort: { dateUpdated: -1 },

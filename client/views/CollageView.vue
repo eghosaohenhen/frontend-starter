@@ -2,26 +2,49 @@
 import CollageListComponent from "@/components/Collage/CollageListComponent.vue";
 import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
+import { ref } from "vue";
 import router from "../router";
 
 
 const { currentUsername, isLoggedIn } = storeToRefs(useUserStore());
+const emit = defineEmits(["addEditor"]);
+const isMaximized = ref(false); 
+const selectable = ref(true);
+let collageSelected = ref<Array<Record<string, string>>>([]);
+let editor = ref(false); 
+let own = ref(false); 
+const switchCollageView = (collage:any) => {
+  isMaximized.value = !isMaximized.value;
+  if (isMaximized.value){
+    collageSelected.value = collage; 
+  }
+    };
 async function switchPage() {
   void router.push({ name: "AddCollage" });
 }
 </script>
 
 <template>
-  <main class="column" id="container">
+  {{ isMaximized }}
+  <div class="column" id="container" v-show="!isMaximized">
     <menu>
         <h2>Private Collages</h2>
         
             <label name="Add New" @click="switchPage">Add New </label>
     </menu>
-      <CollageListComponent />
+      <CollageListComponent :own="true" :selectable="true" @selected:collage="switchCollageView($event)"/>
       <h2>Shared Collages</h2>
-      <CollageListComponent />
-  </main>
+      <CollageListComponent :editor="true" :selectable="true" :own="false" @selected:collage="switchCollageView"/>
+  </div>
+  <div class="column" id="container" v-show="isMaximized">
+    <menu>
+        <h2>{{ collageSelected }}</h2>
+        
+            <label name="Add Editor" @click="emit('addEditor')">Add Editor </label>
+    </menu>
+      
+      <!-- <CollageComponent :editor="editor" :own="own" :collage="maximizedCollage"/> -->
+  </div>
 </template>
 
 <style scoped>

@@ -6,20 +6,30 @@ import { useUserStore } from "@/stores/user";
 import { fetchy } from "@/utils/fetchy";
 import { storeToRefs } from "pinia";
 import { onBeforeMount, ref } from "vue";
-import SearchCollageForm from "./SearchCollageForm.vue";
 
 const { isLoggedIn } = storeToRefs(useUserStore());
-const props = defineProps(["selectable","minimized","small"]);
-const emit = defineEmits([ "selected:collage_id", "refreshCollages"]);
+const props = defineProps(["selectable", "own", "editor", "contributor"]);
+const emit = defineEmits([ "selected:collage", "refreshCollages"]);
 const loaded = ref(false);
 const { currentUsername } = storeToRefs(useUserStore());
 let collages = ref<Array<Record<string, string>>>([]);
-let selectTarget = ref<string>("");
+let selectTarget = ref<string>("hu");
 let selectedOne = ref<boolean>(false);
 let searchName = ref("");
+
 // props are like the constructor values for calls to this object 
-async function getCollages(name?: string) {
-  let query: Record<string, string> = name !== undefined ? { name } : {};
+async function getCollages(filterType?: string, filter?:string) {
+  //author is actually 
+  let query: Record<string, string>;
+  if(filterType === "author"){
+    query = (filter)? {author:filter}:{}; 
+  }else if (filterType === "contributor"){
+    query = (filter)? {exclusive: "true", editor:filter}:{};
+  }else{
+    query = (filter)? {editor:filter}:{};
+  }
+  
+  console.log(query, "collage query");
   let collageResults;
   try {
     collageResults = await fetchy("/api/collages", "GET", { query });
@@ -27,20 +37,31 @@ async function getCollages(name?: string) {
     return;
   }
   console.log(collageResults)
-  searchName.value = name ? name : "";
   collages.value = collageResults;
 }
-async function toggleOverlay (index:number) {
-    selectTarget.value = collages.value[index]._id;
-    selectedOne.value = true;
-    emit("selected:collage_id", selectTarget.value);
+
+async function toggleOver (index:number) {
+  console.log('in select target', index);
+  selectTarget.value = collages.value[index]._id;
+  selectedOne.value = true;
+  emit("selected:collage", selectTarget.value);
 };
 // function updateEditing(id: string) {
 //   editing.value = id;
 // }
 
 onBeforeMount(async () => {
-  await getCollages();
+  if (props.own) {
+    await getCollages("author", currentUsername.value);
+  } else if (props.editor) {
+    await getCollages("editor", currentUsername.value);
+  }else if (props.contributor) {
+    await getCollages("contributor", currentUsername.value);
+  }else{
+    await getCollages();
+
+  }
+  
   loaded.value = true;
 });
 </script>
@@ -49,17 +70,22 @@ onBeforeMount(async () => {
   
     <h2 v-if="!searchName">Collages:</h2>
     <h2 v-else>Collages by {{ searchName }}:</h2>
-    <SearchCollageForm class= "side" @getCollagesByName="getCollages(currentUsername)" />
-    
+    <!-- @refreshCollages="getCollages('contributor', currentUsername) -->
+    <!-- <SearchCollageForm class= "side" @getCollagesByName="getCollages(currentUsername)" :own="props.own" :editor="props.editor"/> -->
   <section class="collages" v-if="loaded && collages.length !== 0">
-    <article v-for="(collage,index) in collages" :key="collage._id">
-        <div v-if="selectable">
-            <MiniCollageComponent :collage="collage" @onClick= "toggleOverlay(index)" @refreshCollages="getCollages" />
-            <div class="overlay" v-show="selectTarget === collage._id"></div>
+    <article @onClick= "toggleOver(index)" v-for="(collage,index) in collages" :key="collage._id">
+      {{ selectable }}
+      {{ selectTarget }}
+
+      
+        <div v-show="selectable">
+            
+              <MiniCollageComponent :collage="collage" />
+            <!-- <div class="overlay" v-show="selectTarget === collage._id"></div> -->
        
         </div>
 
-      <MiniCollageComponent :collage="collage" @refreshCollages="getCollages" />
+      <!-- <MiniCollageComponent :collage="collage" @refreshCollages="getCollages" /> -->
       
     </article>
   </section>
@@ -108,7 +134,15 @@ article {
   padding: 1em;
   flex-wrap: wrap;
 }
-
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.5); /* White overlay with transparency */
+    display: block;
+  }
 .row {
   display: flex;
   justify-content: space-between;
