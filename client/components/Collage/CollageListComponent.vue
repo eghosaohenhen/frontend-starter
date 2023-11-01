@@ -13,7 +13,7 @@ const emit = defineEmits([ "selected:collage", "refreshCollages"]);
 const loaded = ref(false);
 const { currentUsername } = storeToRefs(useUserStore());
 let collages = ref<Array<Record<string, string>>>([]);
-let selectTarget = ref<string>("hu");
+let selectTarget = ref<string>("");
 let selectedOne = ref<boolean>(false);
 let searchName = ref("");
 
@@ -40,12 +40,12 @@ async function getCollages(filterType?: string, filter?:string) {
   collages.value = collageResults;
 }
 
-async function toggleOver (index:number) {
+const toggleOr = async(index:number) => {
   console.log('in select target', index);
   selectTarget.value = collages.value[index]._id;
   selectedOne.value = true;
   emit("selected:collage", selectTarget.value);
-};
+}
 // function updateEditing(id: string) {
 //   editing.value = id;
 // }
@@ -66,22 +66,27 @@ onBeforeMount(async () => {
 });
 </script>
 
-<template>
+<template >
   
     <h2 v-if="!searchName">Collages:</h2>
     <h2 v-else>Collages by {{ searchName }}:</h2>
-    <!-- @refreshCollages="getCollages('contributor', currentUsername) -->
+    
     <!-- <SearchCollageForm class= "side" @getCollagesByName="getCollages(currentUsername)" :own="props.own" :editor="props.editor"/> -->
   <section class="collages" v-if="loaded && collages.length !== 0">
-    <article @onClick= "toggleOver(index)" v-for="(collage,index) in collages" :key="collage._id">
-      {{ selectable }}
-      {{ selectTarget }}
-
+    <article v-for="(collage,index) in collages" :key="collage._id">
       
-        <div v-show="selectable">
-            
+      
+      <template v-if="selectable">
+        
+      </template>
+      
+        <div v-show="props.selectable">
+          
+          <div class="overlay" v-show="selectTarget === collage._id"><h3>selected</h3></div>
+          <button class="fav_button"  @click= "toggleOr(index)" >Choose Me</button>
+          
               <MiniCollageComponent :collage="collage" />
-            <!-- <div class="overlay" v-show="selectTarget === collage._id"></div> -->
+            
        
         </div>
 
@@ -128,6 +133,16 @@ article {
   gap: 0.5em;
   padding: 1em;
 }
+.fav_button{
+  padding: .1em;
+  font-size: small;
+  border-radius: 8px;
+  border-style: solid;
+  border-width: medium;
+  border-color:var(--medium-pink);
+  background: var(--light-pink);
+  color:var(--muted-lavender);
+}
 
 .collages {
   display: flex;
@@ -135,13 +150,12 @@ article {
   flex-wrap: wrap;
 }
 .overlay {
-    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     background-color: rgba(255, 255, 255, 0.5); /* White overlay with transparency */
-    display: block;
+    display: contents;
   }
 .row {
   display: flex;

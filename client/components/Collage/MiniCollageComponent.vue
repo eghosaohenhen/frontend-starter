@@ -36,6 +36,7 @@ async function getEditors() {
   
 }
 async function getContent() {
+  console.log(props.collage._id, "this is the passed in collage id");
     let lquery: Record<string, string> =props.collage._id !== undefined ? { _id:props.collage._id } : {};
   let contentResults;
   try {
@@ -76,7 +77,7 @@ onBeforeMount(async () => {
   <!-- <p>{{ props.post.content }}</p> -->
   <article>
   <div class="container" @onClick="switchPage">
-    
+    <!-- {{ content }} -->
     <section class="contents">
     <div class="left">
         <div class = "large" v-if="loaded && content.length !== 0">

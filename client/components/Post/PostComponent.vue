@@ -49,13 +49,15 @@ const deletePost = async () => {
   }
   emit("refreshPosts");
 };
-const selectCollage = async (collageObject:any) =>{
-  collage_id.value = collageObject._id;
+const selectCollage = async (_id:string) =>{
+  collage_id.value = _id;
 }
 const createFavorite = async () => {
+  console.log('i was called', collage_id, props.post._id);
   emit("saved:post_id", props.post._id,collage_id.value);
   // void router.push({ name: "AddCollage" });
   emit("refreshPosts");
+  toggleChildVisibility(); 
 };
 onBeforeMount(async () => {
   await mediaIdtoUrl();
@@ -127,14 +129,19 @@ onBeforeMount(async () => {
       </div>
     </div>
     <v-scroll-y-transition>
-      <form class="span1" @submit.prevent="createFavorite()" v-show="collageVisible">
-        <div class="container">
+      <div class="container" v-if="collageVisible">
+        
         <h4 v-if="collageVisible">Choose Collage</h4>
-        <CollageListComponent  :contributor= "true" :selectable="selectable" v-if="collageVisible" required/>
+        <div class ="back">
+          <CollageListComponent  :contributor= "true" @selected:collage="collage_id = $event" :selectable="selectable" v-if="collageVisible" required/>
+        </div>
+        
+
+        <form class="span1" @submit.prevent="createFavorite()" v-show="collageVisible">
         <button class="button-error fav_button" type="submit" :disabled="isSubmitDisabled" >Save Post</button>
-      </div>
-    
       </form>
+      </div>
+      
       
     </v-scroll-y-transition>
     
@@ -155,7 +162,7 @@ p {
 img {
   width: 100%;
 }
-form {
+.back {
   background-color: var(--muted-lavender);
   border-radius: 1em;
   display: flex;

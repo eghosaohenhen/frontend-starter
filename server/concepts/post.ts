@@ -39,6 +39,18 @@ export default class PostConcept {
     });
     return posts;
   }
+  async getAnyPosts(_ids: ObjectId[]) {
+    console.log(_ids, "issd");
+    const posts = await this.posts.readMany(
+      {
+        _id: { $in: _ids },
+      },
+      {
+        sort: { dateUpdated: -1 },
+      },
+    );
+    return posts;
+  }
   async getOne(query: Filter<PostDoc>) {
     const post = await this.posts.readOne(query);
     return post;

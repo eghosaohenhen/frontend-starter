@@ -101,8 +101,9 @@ class Routes {
     //return { msg: created.msg, post: await Responses.post(created.post) };
   }
   //different router for posts because they go into a collage when favorited.
-  @Router.post("/favorites/:post_id/collages/:collage_id")
+  @Router.post("/favorites/:item_id/collages/:collage_id")
   async favoritePost(session: WebSessionDoc, item_id: ObjectId, collage_id: ObjectId) {
+    console.log("IDDSS", item_id, "kfjj", collage_id);
     const user = WebSession.getUser(session);
     await Collage.addContent(collage_id, item_id);
     return await PostFavorite.addFavorite(user, item_id);
@@ -262,9 +263,12 @@ class Routes {
     const collage = await Collage.getCollageById(_id);
     if (collage) {
       console.log(collage, "collage");
-      const editors = collage.content;
-      return await User.idsToUsernames(editors);
+      const posts = await Post.getAnyPosts(collage.content);
+      console.log("ALL THE POSTS", posts, "ALL THE POSTS");
+
+      return Responses.posts(posts);
     } else {
+      console.log("L ratio");
       throw new NotFoundError(`cannot find collage with id ${_id}`);
     }
   }
@@ -276,7 +280,7 @@ class Routes {
     return await Collage.delete(_id);
   }
   //CHECK idk if it is patch or post
-  @Router.post("/collages/:_id/content")
+  @Router.post("/collages/:_id/content/:content_id")
   async addContent(session: WebSessionDoc, _id: ObjectId, content_id: ObjectId) {
     const user = WebSession.getUser(session);
     await Collage.isEditor(user, _id);

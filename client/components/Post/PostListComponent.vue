@@ -33,14 +33,14 @@ async function getPosts(filterType?: string, filter?:string) {
   posts.value = postResults;
 }
 async function addContent(post_id:string, collage_id:string) {
-  console.log("in add content this is post", post_id, collage_id)
+  console.log("in add content this is post", post_id, "collage_id", collage_id)
     // let lquery: Record<string, string> =props.collage._id !== undefined ? { _id:props.collage._id } : {};
   let contentResults;
   try {
     let newFavorite = await fetchy(`api/favorites/${post_id}/collages/${collage_id}`, 
     "POST", 
     { body: {item_id:post_id, collage_id: collage_id}, });
-    console.log(newFavorite.value, "newFavorite");
+    console.log(newFavorite, "newFavorite");
 
   } catch (_) {
     return;
